@@ -147,6 +147,7 @@
 		endif
 
 		let re = (match(word, '^[A-Z]') ? '\C' : '') . escape(word, '.$^~')
+    let re = substitute(re, ' ', '.\\{-1,}', 'g')
 		call s:EasyMotion(re, a:direction, a:visualmode ? visualmode() : '', '')
 	endfunction " }}}
 	function! EasyMotionWB(visualmode, direction) " {{{
