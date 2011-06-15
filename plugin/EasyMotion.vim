@@ -139,6 +139,16 @@
 
 		call s:EasyMotion(re, a:direction, a:visualmode ? visualmode() : '', mode(1))
 	endfunction " }}}
+	function! EasyMotionW(visualmode, direction) " {{{
+		let word = input('Search for word: ')
+
+		if empty(word)
+			return
+		endif
+
+		let re = (match(word, '^[A-Z]') ? '\C' : '') . escape(word, '.$^~')
+		call s:EasyMotion(re, a:direction, a:visualmode ? visualmode() : '', '')
+	endfunction " }}}
 	function! EasyMotionWB(visualmode, direction) " {{{
 		call s:EasyMotion('\(\<.\|^$\)', a:direction, a:visualmode ? visualmode() : '', '')
 	endfunction " }}}
@@ -488,6 +498,9 @@
 			" Find motion targets {{{
 				let search_direction = (a:direction == 1 ? 'b' : '')
 				let search_stopline = line(a:direction == 1 ? 'w0' : 'w$')
+				if a:direction == 2
+					call setpos('.', [bufnr('%'), line('w0'), 0, 0])
+				end
 
 				while 1
 					let pos = searchpos(a:regexp, search_direction, search_stopline)
@@ -521,6 +534,9 @@
 					if a:direction == 1
 						" Backward
 						let shade_hl_re = '\%'. line('w0') .'l\_.*' . shade_hl_pos
+					elseif a:direction == 2
+						" Top to Bottom
+						let shade_hl_re = '\%' . line('w0') . 'l\_.*\%' . line('w$') . 'l'
 					else
 						" Forward
 						let shade_hl_re = shade_hl_pos . '\_.*\%'. line('w$') .'l'
